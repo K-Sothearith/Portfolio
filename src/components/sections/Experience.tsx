@@ -33,16 +33,15 @@ const Experience: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
-        className="mb-16 text-right"
+        className="mb-16 text-left"
       >
         <h2 className="text-3xl md:text-5xl font-bold mb-4">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyanGlow to-tealGlow">Experience</span>
         </h2>
-        <div className="w-24 h-1 bg-gradient-to-l from-cyanGlow to-transparent rounded-full ml-auto" />
+        <div className="w-24 h-1 bg-gradient-to-l from-cyanGlow to-transparent rounded-full" />
       </motion.div>
 
       <div className="relative max-w-4xl mx-auto w-full">
-        {/* Vertical Timeline Line */}
         <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyanGlow/50 to-transparent -translate-x-1/2" />
 
         <div className="space-y-12">
@@ -53,22 +52,39 @@ const Experience: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
-              className={`flex flex-col md:flex-row items-center ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+              className="relative grid grid-cols-1 md:grid-cols-2 items-start"
             >
-              {/* Timeline Dot */}
-              <div className="absolute left-0 md:left-1/2 w-4 h-4 bg-abyss border-2 border-cyanGlow rounded-full -translate-x-1/2 shadow-[0_0_10px_rgba(0,240,255,0.8)] z-10" />
+              <div className="absolute left-0 md:left-1/2 top-8 w-4 h-4 bg-abyss border-2 border-cyanGlow rounded-full -translate-x-1/2 shadow-[0_0_10px_rgba(0,240,255,0.8)] z-10" />
 
-              {/* Content Card */}
-              <div className={`w-full md:w-1/2 pl-8 md:pl-0 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12'}`}>
-                <div className="glass-card p-6 md:p-8 hover:-translate-y-2 transition-transform duration-300">
-                  <span className="text-cyanGlow text-sm font-medium tracking-wider mb-2 block">{exp.period}</span>
-                  <h3 className="text-2xl font-bold text-white mb-1">{exp.role}</h3>
-                  <h4 className="text-gray-400 text-lg mb-4">{exp.company}</h4>
-                  <p className="text-gray-500 leading-relaxed">
-                    {exp.description}
-                  </p>
-                </div>
-              </div>
+              {index % 2 === 0 ? (
+                <>
+                  <div className="w-full pl-8 md:pl-0 md:pr-12">
+                    <div className="glass-card p-6 md:p-8 hover:-translate-y-2 transition-transform duration-300">
+                      <span className="text-cyanGlow text-sm font-medium tracking-wider mb-2 block">{exp.period}</span>
+                      <h3 className="text-2xl font-bold text-white mb-1">{exp.role}</h3>
+                      <h4 className="text-gray-400 text-lg mb-4">{exp.company}</h4>
+                      <p className="text-gray-500 leading-relaxed">
+                        {exp.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="hidden md:block" />
+                </>
+              ) : (
+                <>
+                  <div className="hidden md:block" />
+                  <div className="w-full pl-8 md:pl-12">
+                    <div className="glass-card p-6 md:p-8 hover:-translate-y-2 transition-transform duration-300">
+                      <span className="text-cyanGlow text-sm font-medium tracking-wider mb-2 block">{exp.period}</span>
+                      <h3 className="text-2xl font-bold text-white mb-1">{exp.role}</h3>
+                      <h4 className="text-gray-400 text-lg mb-4">{exp.company}</h4>
+                      <p className="text-gray-500 leading-relaxed">
+                        {exp.description}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </motion.div>
           ))}
         </div>

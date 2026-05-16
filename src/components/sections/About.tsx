@@ -42,7 +42,7 @@ const About: React.FC = () => {
         <motion.div variants={itemVariants} className="glass-card md:col-span-2 p-8 flex flex-col justify-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-cyanGlow/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <h3 className="text-2xl font-bold mb-4 text-white">Who I Am</h3>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-lg text-justify">
             I am a passionate software engineer exploring the depths of interactive web experiences. 
             My focus is on creating immersive, high-performance applications that blend beautiful design 
             with solid architecture.
@@ -59,7 +59,7 @@ const About: React.FC = () => {
         {/* Card 3: Philosophy */}
         <motion.div variants={itemVariants} className="glass-card p-8 flex flex-col justify-center relative overflow-hidden group">
           <h3 className="text-xl font-bold mb-3 text-white">My Philosophy</h3>
-          <p className="text-gray-400">
+          <p className="text-gray-400 text-justify">
             Clean code, scalable architecture, and pixel-perfect design. 
             I believe in building applications that are as robust under the hood as they are visually striking.
           </p>

@@ -23,7 +23,7 @@ function App() {
     <div className="relative w-full bg-abyss text-white selection:bg-cyanGlow/30 selection:text-white">
       <SonarReveal />
       <Navbar />
-      
+
       <main className="relative z-20 flex flex-col items-center w-full max-w-7xl mx-auto px-6 lg:px-12">
         <Home />
         <About />
