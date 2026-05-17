@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react';
-import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, extend, useFrame, type ThreeElement } from '@react-three/fiber';
 import { Float, OrbitControls, shaderMaterial, useTexture } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
@@ -68,18 +68,9 @@ const SphereMat = shaderMaterial(
 
 extend({ SphereMat });
 
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
-      sphereMat: any;
-    }
-  }
-}
-declare module 'react/jsx-runtime' {
-  namespace JSX {
-    interface IntrinsicElements {
-      sphereMat: any;
-    }
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    sphereMat: ThreeElement<typeof SphereMat>;
   }
 }
 
