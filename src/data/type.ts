@@ -28,23 +28,3 @@ export interface Project{
     video_demo: string;
     image_gallery: string[];
 }
-
-export interface Contact{
-    icon: string;
-    contact_name: string;
-    label: string;
-    href: string;
-    username: string;
-}
-
-export interface NavbarLink{
-    id: string;
-    label: string;
-    icon: string;
-}
-
-export interface SocialLink{
-    icon: string;
-    href: string;
-    label: string;
-}

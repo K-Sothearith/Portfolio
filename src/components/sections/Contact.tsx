@@ -2,11 +2,11 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, XCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
-import githubLogo from '../../assets/Github.png'
-import LinkedInLogo from '../../assets/LinkedIn.png'
-import FacebookLogo from '../../assets/Facebook.png'
-import InstagramLogo from '../../assets/Instagram.webp'
-import TelegramLogo from '../../assets/Telegram.png'
+import githubLogo from '../../assets/icons/Github.png'
+import LinkedInLogo from '../../assets/icons/LinkedIn.png'
+import FacebookLogo from '../../assets/icons/Facebook.png'
+import InstagramLogo from '../../assets/icons/Instagram.webp'
+import TelegramLogo from '../../assets/icons/Telegram.png'
 
 const Contact: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);

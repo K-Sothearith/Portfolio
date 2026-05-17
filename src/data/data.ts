@@ -87,6 +87,12 @@ export const TechStackData: TechStack[] = [
     // variant: "secondary"
   },
   {
+    name: "Python",
+    // icon: Python,
+    tag: "Language",
+    // variant: "secondary"
+  },
+  {
     name: "Vite",
     // icon: vite,
     tag: "Tool",
@@ -97,11 +103,5 @@ export const TechStackData: TechStack[] = [
     // icon: vercel,
     tag: "Platform",
     // variant: "primary"
-  },
-  {
-    name: "Three.js",
-    // icon: threejs,
-    tag: "Library",
-    // variant: "secondary"
   }
 ];
