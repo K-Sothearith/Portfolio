@@ -1,8 +1,8 @@
 export interface TechStack{
     name: string;
-    // icon: string;
+    icon: string;
     tag: string;
-    // variant: 'primary' | 'secondary';
+    variant: 'primary' | 'secondary';
 }
 
 

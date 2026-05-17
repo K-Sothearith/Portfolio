@@ -1,107 +1,108 @@
 import type { TechStack } from './type';
+import { C, Cpp, Html, Css, Tailwind, Js, Node, Java, Reactjs, Vite, Ts, Python, Figma, Git, Github, MySQL, Vercel } from '../assets/assets';
 
 export const TechStackData: TechStack[] = [
   {
-    name: "HTML",
-    // icon: html,
+    name: "C",
+    icon: C,
     tag: "Language",
-    // variant: "primary"
+    variant: "secondary"
+  },
+  {
+    name: "C++",
+    icon: Cpp,
+    tag: "Language",
+    variant: "secondary"
+  },
+  {
+    name: "HTML",
+    icon: Html,
+    tag: "Language",
+    variant: "primary"
   },
   {
     name: "CSS",
-    // icon: css,
+    icon: Css,
     tag: "Language",
-    // variant: "primary"
-  },
-  {
-    name: "JavaScript",
-    // icon: javascript,
-    tag: "Language",
-    // variant: "primary"
-  },
-  {
-    name: "TypeScript",
-    // icon: typescript,
-    tag: "Language",
-    // variant: "primary"
-  },
-  {
-    name: "React JS",
-    // icon: reactjs,
-    tag: "Framework",
-    // variant: "primary"
+    variant: "primary"
   },
   {
     name: "Tailwind",
-    // icon: tailwind,
+    icon: Tailwind,
     tag: "Framework",
-    // variant: "primary"
+    variant: "primary"
+  },
+  {
+    name: "JavaScript",
+    icon: Js,
+    tag: "Language",
+    variant: "primary"
   },
   {
     name: "Node JS",
-    // icon: nodejs,
+    icon: Node,
     tag: "Runtime",
-    // variant: "primary"
+    variant: "primary"
+  },
+  {
+    name: "Java",
+    icon: Java,
+    tag: "Language",
+    variant: "secondary"
+  },
+  {
+    name: "React JS",
+    icon: Reactjs,
+    tag: "Framework",
+    variant: "primary"
+  },
+  {
+    name: "Vite",
+    icon: Vite,
+    tag: "Tool",
+    variant: "primary"
+  },
+  {
+    name: "TypeScript",
+    icon: Ts,
+    tag: "Language",
+    variant: "primary"
+  },
+  {
+    name: "Python",
+    icon: Python,
+    tag: "Language",
+    variant: "secondary"
   },
   {
     name: "Figma",
-    // icon: figma,
+    icon: Figma,
     tag: "Tool",
-    // variant: "primary"
+    variant: "primary"
   },
   {
     name: "Git",
-    // icon: git,
+    icon: Git,
     tag: "Tool",
-    // variant: "primary"
+    variant: "primary"
 
   },
   {
     name: "GitHub",
-    // icon: github,
+    icon: Github,
     tag: "Platform",
-    // variant: "primary"
+    variant: "primary"
   },
   {
     name: "MySQL",
-    // icon: mysql,
+    icon: MySQL,
     tag: "Database",
-    // variant: "primary"
-  },
-  {
-    name: "Java",
-    // icon: java,
-    tag: "Language",
-    // variant: "secondary"
-  },
-  {
-    name: "C",
-    // icon: c,
-    tag: "Language",
-    // variant: "secondary"
-  },
-  {
-    name: "C++",
-    // icon: cplus,
-    tag: "Language",
-    // variant: "secondary"
-  },
-  {
-    name: "Python",
-    // icon: Python,
-    tag: "Language",
-    // variant: "secondary"
-  },
-  {
-    name: "Vite",
-    // icon: vite,
-    tag: "Tool",
-    // variant: "primary"
+    variant: "primary"
   },
   {
     name: "Vercel",
-    // icon: vercel,
+    icon: Vercel,
     tag: "Platform",
-    // variant: "primary"
+    variant: "primary"
   }
 ];

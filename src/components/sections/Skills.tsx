@@ -1,60 +1,184 @@
 import React, { useMemo, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Html, Float } from '@react-three/drei';
+import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
+import { Float, OrbitControls, shaderMaterial, useTexture } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
+import { TechStackData } from '../../data/data';
 
-const skills = [
-  'JavaScript', 'TypeScript', 'React', 'Node.js', 
-  'Java', 'MySQL', 'Git', 'Docker', 'Tailwind', 'Figma'
-];
+const SphereMat = shaderMaterial(
+  {
+    colorDeep: new THREE.Color('#0a1628'),
+    colorMid: new THREE.Color('#0d3d5c'),
+    colorRim: new THREE.Color('#4dd9f0'),
+    lightDir: new THREE.Vector3(0.6, 0.8, 1.0).normalize(),
+  },
+  // vertex
+  /* glsl */ `
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+    varying vec3 vPos;
 
-const SkillNode = ({ position, text }: { position: [number, number, number], text: string }) => {
+    void main() {
+      vec4 worldPos = modelMatrix * vec4(position, 1.0);
+      vec3 camPos = cameraPosition;
+
+      vNormal = normalize(normalMatrix * normal);
+      vViewDir = normalize(camPos - worldPos.xyz);
+      vPos = position;
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  // fragment
+  /* glsl */ `
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+    varying vec3 vPos;
+
+    uniform vec3 colorDeep;
+    uniform vec3 colorMid;
+    uniform vec3 colorRim;
+    uniform vec3 lightDir;
+
+    void main() {
+      // Fresnel — stronger at grazing angles (the rim glow)
+      float fresnel = pow(1.0 - clamp(dot(vNormal, vViewDir), 0.0, 1.0), 3.5);
+
+      // Diffuse lighting
+      float diff = clamp(dot(vNormal, lightDir), 0.0, 1.0);
+
+      // Specular highlight — sharp water-like glint
+      vec3 halfVec = normalize(lightDir + vViewDir);
+      float spec = pow(clamp(dot(vNormal, halfVec), 0.0, 1.0), 120.0);
+
+      // Base color: deep core → mid → rim
+      vec3 col = mix(colorDeep, colorMid, diff * 0.7);
+      col = mix(col, colorRim, fresnel * 0.75);
+
+      // Add specular glint on top
+      col += vec3(0.85, 0.97, 1.0) * spec * 1.4;
+
+      // Opacity: mostly opaque in center, slightly transparent at rim
+      float alpha = mix(0.92, 0.55, fresnel);
+
+      gl_FragColor = vec4(col, alpha);
+    }
+  `,
+);
+
+extend({ SphereMat });
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      sphereMat: any;
+    }
+  }
+}
+declare module 'react/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      sphereMat: any;
+    }
+  }
+}
+
+const SphereShell = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    meshRef.current.rotation.y = -state.clock.elapsedTime * 0.25; // same speed, leftward
+  });
+
   return (
-    <group position={position}>
-      <Html transform center sprite distanceFactor={10}>
-        <div className="px-4 py-2 bg-ocean/80 backdrop-blur-md border border-cyanGlow/30 rounded-full text-sm font-medium text-white whitespace-nowrap shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)] hover:border-cyanGlow transition-all duration-300 cursor-default select-none">
-          {text}
-        </div>
-      </Html>
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[3.2, 64, 64]} />
+      <sphereMat
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+  );
+};
+
+type TechItem = (typeof TechStackData)[number];
+
+const OrbitIcon = ({ iconUrl, size }: { iconUrl: string; size: number }) => {
+  const texture = useTexture(iconUrl);
+
+  return (
+    <mesh>
+      <planeGeometry args={[size, size]} />
+      <meshBasicMaterial map={texture} transparent opacity={1} depthWrite={false} />
+    </mesh>
+  );
+};
+
+const TechRing = ({
+  items,
+  radiusX,
+  radiusY,
+  speed,
+  phase,
+}: {
+  items: TechItem[];
+  radiusX: number;
+  radiusY: number;
+  speed: number;
+  phase: number;
+}) => {
+  const groupRefs = useRef<(THREE.Group | null)[]>([]);
+  const baseAngles = useMemo(
+    () => items.map((_, i) => (i / items.length) * Math.PI * 2 + phase),
+    [items, phase],
+  );
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime * speed;
+    items.forEach((_, index) => {
+      const group = groupRefs.current[index];
+      if (!group) return;
+      const angle = baseAngles[index] + t;
+      group.position.x = Math.cos(angle) * radiusX;
+      group.position.y = Math.sin(angle) * radiusY;
+      group.position.z = 0; // always on screen plane
+    });
+  });
+
+  return (
+    <group>
+      {items.map((item, index) => {
+        const size = item.variant === 'secondary' ? 0.55 : 0.65;
+        return (
+          <group
+            key={item.name}
+            ref={(el) => {
+              groupRefs.current[index] = el;
+            }}
+          >
+            <OrbitIcon iconUrl={item.icon} size={size} />
+          </group>
+        );
+      })}
     </group>
   );
 };
 
-const OrbitingSphere = () => {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  // Distribute points evenly on a sphere using Fibonacci lattice
-  const points = useMemo(() => {
-    const pts: [number, number, number][] = [];
-    const phi = Math.PI * (3 - Math.sqrt(5)); // golden angle
-    const n = skills.length;
-    const radius = 3.25;
-    
-    for (let i = 0; i < n; i++) {
-      const y = 1 - (i / (n - 1)) * 2; // y goes from 1 to -1
-      const radiusAtY = Math.sqrt(1 - y * y) * radius;
-      const theta = phi * i;
-      
-      const x = Math.cos(theta) * radiusAtY;
-      const z = Math.sin(theta) * radiusAtY;
-      pts.push([x, y * radius, z]);
-    }
-    return pts;
-  }, []);
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.elapsedTime * 0.1;
-      groupRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.05) * 0.2;
-    }
-  });
-
+const TechSphere = () => {
   return (
-    <group ref={groupRef}>
-      {skills.map((skill, index) => (
-        <SkillNode key={skill} position={points[index]} text={skill} />
-      ))}
+    <group>
+      <group rotation={[0.15, -0.15, 0]}>
+        <SphereShell />
+      </group>
+      <TechRing
+        items={TechStackData}
+        radiusX={4.2}
+        radiusY={4.2}
+        speed={0.25}
+        phase={0}
+      />
     </group>
   );
 };
@@ -75,12 +199,14 @@ const Skills: React.FC = () => {
         <div className="w-24 h-1 bg-gradient-to-r from-cyanGlow to-transparent rounded-full mx-auto" />
       </motion.div>
 
-      <div className="w-full max-w-5xl mx-auto h-[520px] md:h-[640px] relative">
-        <Canvas camera={{ position: [0, 0, 9], fov: 45 }}>
-          <ambientLight intensity={0.5} />
-          <Float speed={1.5} rotationIntensity={0.5} floatIntensity={1}>
-            <OrbitingSphere />
+      <div className="w-full max-w-5xl mx-auto h-[520px] md:h-[640px] relative cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [0, 0, 13], fov: 45 }}>
+          <ambientLight intensity={0.75} />
+          <directionalLight position={[5, 4, 6]} intensity={0.65} />
+          <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.8}>
+            <TechSphere />
           </Float>
+          <OrbitControls enablePan={false} enableZoom={false} rotateSpeed={0.25} />
         </Canvas>
       </div>
     </section>
