@@ -1,16 +1,32 @@
-import React, { Suspense, useEffect, useRef } from 'react';
+import React, { Suspense, useEffect, useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Environment, Html, ContactShadows } from '@react-three/drei';
+import { Float, Environment, Html, ContactShadows, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Simple keycap grid (instanced for perf)
-const KEY_ROWS = 5;
-const KEY_COLS = 12;
-const KEY_COUNT = KEY_ROWS * KEY_COLS;
-const KEY_SIZE: [number, number, number] = [0.18, 0.026, 0.18];
-const KEY_GAP = 0.035;
-const KEY_AREA_WIDTH = KEY_COLS * KEY_SIZE[0] + (KEY_COLS - 1) * KEY_GAP;
-const KEY_AREA_DEPTH = KEY_ROWS * KEY_SIZE[2] + (KEY_ROWS - 1) * KEY_GAP;
+// Real-world keyboard layout (key widths and labels)
+const KEYBOARD_LAYOUT = [
+  // F-row
+  [{w: 1, l: 'Esc'}, {w: 1, l: 'F1'}, {w: 1, l: 'F2'}, {w: 1, l: 'F3'}, {w: 1, l: 'F4'}, {w: 1, l: 'F5'}, {w: 1, l: 'F6'}, {w: 1, l: 'F7'}, {w: 1, l: 'F8'}, {w: 1, l: 'F9'}, {w: 1, l: 'F10'}, {w: 1, l: 'F11'}, {w: 1, l: 'F12'}, {w: 1, l: 'Prt'}, {w: 1, l: 'Del'}],
+  // Num-row
+  [{w: 1, l: '`'}, {w: 1, l: '1'}, {w: 1, l: '2'}, {w: 1, l: '3'}, {w: 1, l: '4'}, {w: 1, l: '5'}, {w: 1, l: '6'}, {w: 1, l: '7'}, {w: 1, l: '8'}, {w: 1, l: '9'}, {w: 1, l: '0'}, {w: 1, l: '-'}, {w: 1, l: '='}, {w: 2, l: 'Back'}],
+  // QWERTY
+  [{w: 1.5, l: 'Tab'}, {w: 1, l: 'Q'}, {w: 1, l: 'W'}, {w: 1, l: 'E'}, {w: 1, l: 'R'}, {w: 1, l: 'T'}, {w: 1, l: 'Y'}, {w: 1, l: 'U'}, {w: 1, l: 'I'}, {w: 1, l: 'O'}, {w: 1, l: 'P'}, {w: 1, l: '['}, {w: 1, l: ']'}, {w: 1.5, l: '\\'}],
+  // ASDF
+  [{w: 1.75, l: 'Caps'}, {w: 1, l: 'A'}, {w: 1, l: 'S'}, {w: 1, l: 'D'}, {w: 1, l: 'F'}, {w: 1, l: 'G'}, {w: 1, l: 'H'}, {w: 1, l: 'J'}, {w: 1, l: 'K'}, {w: 1, l: 'L'}, {w: 1, l: ';'}, {w: 1, l: "'"}, {w: 2.25, l: 'Enter'}],
+  // ZXCV
+  [{w: 2.25, l: 'Shift'}, {w: 1, l: 'Z'}, {w: 1, l: 'X'}, {w: 1, l: 'C'}, {w: 1, l: 'V'}, {w: 1, l: 'B'}, {w: 1, l: 'N'}, {w: 1, l: 'M'}, {w: 1, l: ','}, {w: 1, l: '.'}, {w: 1, l: '/'}, {w: 2.75, l: 'Shift'}],
+  // Space row
+  [{w: 1.25, l: 'Ctrl'}, {w: 1.25, l: 'Win'}, {w: 1.25, l: 'Alt'}, {w: 6.25, l: ''}, {w: 1.25, l: 'Alt'}, {w: 1.25, l: 'Fn'}, {w: 1.25, l: 'Menu'}, {w: 1.25, l: 'Ctrl'}]
+];
+
+const KEY_COUNT = KEYBOARD_LAYOUT.reduce((acc, row) => acc + row.length, 0);
+const KEY_U = 0.15;
+const KEY_DEPTH = 0.15;
+const KEY_HEIGHT = 0.026;
+const KEY_GAP = 0.02;
+
+const TOTAL_WIDTH = 15 * KEY_U + 14 * KEY_GAP;
+const TOTAL_DEPTH = KEYBOARD_LAYOUT.length * KEY_DEPTH + (KEYBOARD_LAYOUT.length - 1) * KEY_GAP;
 
 const StylizedLaptop = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -58,26 +74,49 @@ function App() {
     }
   });
 
-  useEffect(() => {
-    if (!keysRef.current) return;
-    const dummy = new THREE.Object3D();
+  const keyPositions = useMemo(() => {
+    const positions: { x: number; z: number; w: number; l: string; i: number }[] = [];
+    const startZ = -TOTAL_DEPTH / 2;
     let i = 0;
 
-    for (let r = 0; r < KEY_ROWS; r++) {
-      for (let c = 0; c < KEY_COLS; c++) {
-        const x = -KEY_AREA_WIDTH / 2 + c * (KEY_SIZE[0] + KEY_GAP) + KEY_SIZE[0] / 2;
-        const z = -KEY_AREA_DEPTH / 2 + r * (KEY_SIZE[2] + KEY_GAP) + KEY_SIZE[2] / 2;
-        // Keep keys close to the deck and behind the trackpad.
-        dummy.position.set(x, 0.034, z - 0.2);
-        dummy.rotation.set(0, 0, 0);
-        dummy.updateMatrix();
-        keysRef.current.setMatrixAt(i, dummy.matrix);
+    for (let r = 0; r < KEYBOARD_LAYOUT.length; r++) {
+      const row = KEYBOARD_LAYOUT[r];
+      let currentX = -TOTAL_WIDTH / 2;
+      const z = startZ + r * (KEY_DEPTH + KEY_GAP) + KEY_DEPTH / 2;
+
+      for (let c = 0; c < row.length; c++) {
+        const key = row[c];
+        const keyWidth = key.w * KEY_U + (key.w - 1) * KEY_GAP;
+        const x = currentX + keyWidth / 2;
+
+        positions.push({ x, z, w: key.w, l: key.l, i });
+        
+        currentX += keyWidth + KEY_GAP;
         i++;
       }
     }
+    return positions;
+  }, []);
+
+  useEffect(() => {
+    if (!keysRef.current) return;
+    const dummy = new THREE.Object3D();
+
+    keyPositions.forEach(({ x, z, w, i }) => {
+      const keyWidth = w * KEY_U + (w - 1) * KEY_GAP;
+      // Keep keys close to the deck and behind the trackpad.
+      dummy.position.set(x, 0.034, z - 0.2);
+      dummy.rotation.set(0, 0, 0);
+      
+      // Scale the key horizontally based on its unit width
+      dummy.scale.set(keyWidth / KEY_U, 1, 1);
+      dummy.updateMatrix();
+      
+      keysRef.current!.setMatrixAt(i, dummy.matrix);
+    });
 
     keysRef.current.instanceMatrix.needsUpdate = true;
-  }, []);
+  }, [keyPositions]);
 
   return (
     <group ref={groupRef} position={[0, -0.5, 0]}>
@@ -177,9 +216,28 @@ function App() {
 
         {/* Keys */}
         <instancedMesh ref={keysRef} args={[undefined, undefined, KEY_COUNT]} castShadow receiveShadow>
-          <boxGeometry args={KEY_SIZE} />
+          <boxGeometry args={[KEY_U, KEY_HEIGHT, KEY_DEPTH]} />
           <meshStandardMaterial color="#111a22" roughness={0.6} metalness={0.2} />
         </instancedMesh>
+
+        {/* Key Labels */}
+        <group position={[0, 0, 0]}>
+          {keyPositions.map((k) => (
+            k.l ? (
+              <Text
+                key={k.i}
+                position={[k.x, 0.048, k.z - 0.2]}
+                fontSize={0.035}
+                color="#00f0ff"
+                anchorX="center"
+                anchorY="middle"
+                rotation={[-Math.PI / 2, 0, 0]}
+              >
+                {k.l}
+              </Text>
+            ) : null
+          ))}
+        </group>
 
         {/* Trackpad */}
         <mesh position={[0, 0.03, 0.73]} castShadow receiveShadow>

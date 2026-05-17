@@ -5,6 +5,7 @@ import emailjs from '@emailjs/browser';
 import githubLogo from '../../assets/Github.png'
 import LinkedInLogo from '../../assets/LinkedIn.png'
 import FacebookLogo from '../../assets/Facebook.png'
+import InstagramLogo from '../../assets/Instagram.webp'
 import TelegramLogo from '../../assets/Telegram.png'
 
 const Contact: React.FC = () => {
@@ -87,6 +88,7 @@ const Contact: React.FC = () => {
                 { icon: () => <img src={githubLogo} alt="GitHub"/>, label: 'GitHub', link: 'https://github.com/K-Sothearith' },
                 { icon: () => <img src={LinkedInLogo} alt="LinkedIn"/>, label: 'LinkedIn', link: '#' },
                 { icon: () => <img src={FacebookLogo} alt="Facebook"/>, label: 'Facebook', link: 'https://www.facebook.com/AnhAhRithz' },
+                { icon: () => <img src={InstagramLogo} alt="Instagram"/>, label: 'Instagram', link: 'https://www.instagram.com/kong_sothearith_?igsh=amtlc2VldGhyZWh0' },
                 { icon: () => <img src={TelegramLogo} alt="Telegram"/>, label: 'Telegram', link: 'https://t.me/False_Saintt' }
               ].map((social, index) => (
                 <motion.a
