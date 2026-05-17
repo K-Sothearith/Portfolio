@@ -75,10 +75,12 @@ const Navbar: React.FC = () => {
   const updateIndicator = useCallback(() => {
     const activeIndex = navItems.findIndex(item => item.id === activeSection);
     const activeRef = navRefs.current[activeIndex];
+    const container = navRef.current;
     
-    if (activeRef) {
+    if (activeRef && container) {
+      const scrollLeft = container.scrollLeft ?? 0;
       setIndicatorStyle({
-        left: activeRef.offsetLeft,
+        left: activeRef.offsetLeft - scrollLeft,
         width: activeRef.offsetWidth,
       });
     }
@@ -94,7 +96,13 @@ const Navbar: React.FC = () => {
 
     const ro = new ResizeObserver(() => updateIndicator());
     ro.observe(el);
-    return () => ro.disconnect();
+
+    const onScroll = () => updateIndicator();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      ro.disconnect();
+    };
   }, [updateIndicator]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -107,13 +115,16 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
-      <nav ref={navRef} className="glass-panel px-2 py-2 flex items-center relative rounded-full">
+    <div className="fixed top-3 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-1.25rem)] sm:w-auto">
+      <nav
+        ref={navRef}
+        className="glass-panel px-1.5 py-1.5 sm:px-2 sm:py-2 flex items-center justify-center relative rounded-full max-w-full overflow-x-auto"
+      >
         <motion.div
           className="absolute h-full top-0 py-2 transition-all duration-300 ease-in-out pointer-events-none"
           initial={false}
           animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
-          transition={{ type: 'spring', stiffness: 220, damping: 26, mass: 0.9 }}
+          transition={{ type:'spring', stiffness: 220, damping: 26, mass: 0.9 }}
         >
           <div className="w-full h-full bg-cyanGlow/20 rounded-full border border-cyanGlow/50 shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center justify-center relative">
             <div className="absolute -top-1 w-2 h-1.5 bg-cyanGlow rounded-t-sm shadow-[0_-2px_5px_rgba(0,240,255,0.8)]" />
@@ -127,7 +138,7 @@ const Navbar: React.FC = () => {
             href={`#${item.id}`}
             ref={el => { navRefs.current[i] = el; }}
             onClick={(e) => handleNavClick(e, item.id)}
-            className={`relative z-10 px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+            className={`relative z-10 whitespace-nowrap px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors duration-300 ${
               activeSection === item.id ? 'text-white' : 'text-gray-400 hover:text-cyanGlow'
             }`}
           >

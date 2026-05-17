@@ -2,6 +2,10 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, XCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import githubLogo from '../../assets/Github.png'
+import LinkedInLogo from '../../assets/LinkedIn.png'
+import FacebookLogo from '../../assets/Facebook.png'
+import TelegramLogo from '../../assets/Telegram.png'
 
 const Contact: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);
@@ -16,8 +20,6 @@ const Contact: React.FC = () => {
     setSubmitStatus('idle');
 
     try {
-      // Placeholder EmailJS credentials
-      // In a real scenario, use environment variables: import.meta.env.VITE_EMAILJS_SERVICE_ID
       await emailjs.sendForm(
         'YOUR_SERVICE_ID',
         'YOUR_TEMPLATE_ID',
@@ -63,7 +65,7 @@ const Contact: React.FC = () => {
           Get In <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyanGlow to-tealGlow">Touch</span>
         </h2>
         <div className="w-24 h-1 bg-gradient-to-r from-cyanGlow to-transparent rounded-full mx-auto mb-6" />
-        <p className="text-gray-400 max-w-2xl mx-auto">
+        <p className="text-gray-400 max-w-2.2xl mx-auto">
           Whether you have a question, a project idea, or just want to say hi, 
           I'll try my best to get back to you!
         </p>
@@ -82,14 +84,16 @@ const Contact: React.FC = () => {
             <h3 className="text-2xl font-bold text-white mb-6">Connect</h3>
             <div className="flex flex-col space-y-6">
               {[
-                { icon: () => <span className="font-bold">GH</span>, label: 'GitHub', link: '#' },
-                { icon: () => <span className="font-bold">LI</span>, label: 'LinkedIn', link: '#' },
-                { icon: () => <span className="font-bold">FB</span>, label: 'Facebook', link: '#' },
-                { icon: () => <span className="font-bold">IG</span>, label: 'Instagram', link: '#' }
+                { icon: () => <img src={githubLogo} alt="GitHub"/>, label: 'GitHub', link: 'https://github.com/K-Sothearith' },
+                { icon: () => <img src={LinkedInLogo} alt="LinkedIn"/>, label: 'LinkedIn', link: '#' },
+                { icon: () => <img src={FacebookLogo} alt="Facebook"/>, label: 'Facebook', link: 'https://www.facebook.com/AnhAhRithz' },
+                { icon: () => <img src={TelegramLogo} alt="Telegram"/>, label: 'Telegram', link: 'https://t.me/False_Saintt' }
               ].map((social, index) => (
                 <motion.a
                   key={social.label}
                   href={social.link}
+                  target={social.link === '#' ? undefined : '_blank'}
+                  rel={social.link === '#' ? undefined : 'noopener noreferrer'}
                   variants={floatingVariants}
                   animate="animate"
                   style={{ animationDelay: `${index * 0.2}s` }}
@@ -123,7 +127,7 @@ const Contact: React.FC = () => {
                   id="user_name"
                   required
                   className="bg-abyss/50 border border-cyanGlow/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyanGlow focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all duration-300"
-                  placeholder="John Doe"
+                  placeholder="Yuji Itadori"
                 />
               </div>
               <div className="flex flex-col space-y-2">
@@ -134,7 +138,7 @@ const Contact: React.FC = () => {
                   id="user_email"
                   required
                   className="bg-abyss/50 border border-cyanGlow/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyanGlow focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all duration-300"
-                  placeholder="john@example.com"
+                  placeholder="yuji.itadori@gmail.com"
                 />
               </div>
             </div>
