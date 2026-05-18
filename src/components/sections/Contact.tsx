@@ -86,7 +86,7 @@ const Contact: React.FC = () => {
             <div className="flex flex-col space-y-6">
               {[
                 { icon: () => <img src={githubLogo} alt="GitHub"/>, label: 'GitHub', link: 'https://github.com/K-Sothearith' },
-                { icon: () => <img src={LinkedInLogo} alt="LinkedIn"/>, label: 'LinkedIn', link: '#' },
+                { icon: () => <img src={LinkedInLogo} alt="LinkedIn"/>, label: 'LinkedIn', link: 'https://www.linkedin.com/in/kongsothearith' },
                 { icon: () => <img src={FacebookLogo} alt="Facebook"/>, label: 'Facebook', link: 'https://www.facebook.com/AnhAhRithz' },
                 { icon: () => <img src={InstagramLogo} alt="Instagram"/>, label: 'Instagram', link: 'https://www.instagram.com/kong_sothearith_?igsh=amtlc2VldGhyZWh0' },
                 { icon: () => <img src={TelegramLogo} alt="Telegram"/>, label: 'Telegram', link: 'https://t.me/False_Saintt' }
